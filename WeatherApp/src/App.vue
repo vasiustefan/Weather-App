@@ -2,122 +2,9 @@
 export default {
   data() {
     return {
-      week: [
-        {
-          id: 1,
-          weatherforecast: '',
-          iconforecast: '',
-          avghumidity: '',
-          maxwind_kph: '',
-          avgtemp_c: '',
-          avgtemp_f: ''
-        },
-        {
-          id: 2,
-          weatherforecast: '',
-          iconforecast: '',
-          avghumidity: '',
-          maxwind_kph: '',
-          avgtemp_c: '',
-          avgtemp_f: '',
-          day: ''
-        },
-        {
-          id: 3,
-          weatherforecast: '',
-          iconforecast: '',
-          avghumidity: '',
-          maxwind_kph: '',
-          avgtemp_c: '',
-          avgtemp_f: '',
-          day: ''
-        },
-        {
-          id: 4,
-          weatherforecast: '',
-          iconforecast: '',
-          avghumidity: '',
-          maxwind_kph: '',
-          avgtemp_c: '',
-          avgtemp_f: '',
-          day: ''
-        },
-        {
-          id: 5,
-          weatherforecast: '',
-          iconforecast: '',
-          avghumidity: '',
-          maxwind_kph: '',
-          avgtemp_c: '',
-          avgtemp_f: '',
-          day: ''
-        }
-      ],
-      history: [
-        {
-          id: 1,
-          weatherhistory: '',
-          iconhistory: '',
-          avgtemp_chistory: '',
-          avgtemp_fhistory: '',
-          avghumidityhistory: '',
-          maxwind_kphhistory: ''
-        },
-        {
-          id: 2,
-          weatherhistory: '',
-          iconhistory: '',
-          avgtemp_chistory: '',
-          avgtemp_fhistory: '',
-          avghumidityhistory: '',
-          maxwind_kphhistory: ''
-        },
-        {
-          id: 3,
-          weatherhistory: '',
-          iconhistory: '',
-          avgtemp_chistory: '',
-          avgtemp_fhistory: '',
-          avghumidityhistory: '',
-          maxwind_kphhistory: ''
-        },
-        {
-          id: 4,
-          weatherhistory: '',
-          iconhistory: '',
-          avgtemp_chistory: '',
-          avgtemp_fhistory: '',
-          avghumidityhistory: '',
-          maxwind_kphhistory: ''
-        },
-        {
-          id: 5,
-          weatherhistory: '',
-          iconhistory: '',
-          avgtemp_chistory: '',
-          avgtemp_fhistory: '',
-          avghumidityhistory: '',
-          maxwind_kphhistory: ''
-        },
-        {
-          id: 6,
-          weatherhistory: '',
-          iconhistory: '',
-          avgtemp_chistory: '',
-          avgtemp_fhistory: '',
-          avghumidityhistory: '',
-          maxwind_kphhistory: ''
-        },
-        {
-          id: 7,
-          weatherhistory: '',
-          iconhistory: '',
-          avgtemp_chistory: '',
-          avgtemp_fhistory: '',
-          avghumidityhistory: '',
-          maxwind_kphhistory: ''
-        }
-      ],
+      inputdata: '',
+      week: [],
+      history: [],
       city: '',
       date: '',
       weather: '',
@@ -126,12 +13,14 @@ export default {
       feelslike_c: '',
       fellslie_f: '',
       humidity: '',
-      wind: '',
+      wind_kph: '',
+      wind_mph: '',
       icon: '',
       weatherforecast: '',
       iconforecast: '',
       avghumidity: '',
       maxwind_kph: '',
+      maxwind_mph: '',
       avgtemp_c: '',
       avgtemp_f: '',
       weatherhistory: '',
@@ -146,8 +35,7 @@ export default {
   },
   methods: {
     fetchData() {
-      const q = document.querySelector('input').value
-      let Url = `http://api.weatherapi.com/v1/current.json?key=dd8adb29e86c47fb896133114230903&q=${q}&aqi=no`
+      let Url = `http://api.weatherapi.com/v1/current.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&aqi=no`
       fetch(Url)
         .then((response) => response.json())
         .then((data) => {
@@ -159,38 +47,39 @@ export default {
           this.fellslie_f = data.current.feelslike_f + '°F'
           this.weather = data.current.condition.text
           this.humidity = data.current.humidity + '%'
-          this.wind = data.current.wind_kph + 'km/h'
+          this.wind_kph = data.current.wind_kph + 'km/h'
+          this.wind_mph = data.current.wind_mph + 'mph'
           this.icon = data.current.condition.icon
         })
     },
     fetchForecast() {
-      const q = document.querySelector('input').value
-      let Url = `http://api.weatherapi.com/v1/forecast.json?key=dd8adb29e86c47fb896133114230903&q=${q}&days=5&aqi=no`
+      let Url = `http://api.weatherapi.com/v1/forecast.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&days=5&aqi=no`
       fetch(Url)
         .then((response) => response.json())
         .then((data) => {
-          this.date = data.forecast.forecastday[0].date
-          this.avgtemp_c = data.forecast.forecastday[0].day.avgtemp_c + '°C'
-          this.avgtemp_f = data.forecast.forecastday[0].day.avgtemp_f + '°F'
-          this.avghumidity = data.forecast.forecastday[0].day.avghumidity + '%'
-          this.maxwind_kph = data.forecast.forecastday[0].day.maxwind_kph + 'km/h'
+          this.week = data.forecast.forecastday
+          this.avgtemp_c = data.forecast.forecastday[0].day.avgtemp_c
+          this.avgtemp_f = data.forecast.forecastday[0].day.avgtemp_f
+          this.avghumidity = data.forecast.forecastday[0].day.avghumidity
+          this.maxwind_kph = data.forecast.forecastday[0].day.maxwind_kph
+          this.maxwind_mph = data.forecast.forecastday[0].day.maxwind_mph
           this.iconforecast = data.forecast.forecastday[0].day.condition.icon
           this.weatherforecast = data.forecast.forecastday[0].day.condition.text
         })
     },
     fetchHistory() {
-      const q = document.querySelector('input').value
-      let Url = `http://api.weatherapi.com/v1/history.json?key=dd8adb29e86c47fb896133114230903&q=${q}&dt=${this.previousDay(
-        this.date,
-        7
-      )}&aqi=no`
+      let date = this.returnhistory(this.date)
+      let Url = `http://api.weatherapi.com/v1/history.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&dt=${date}&aqi=no`
+
+      console.log(Url)
       fetch(Url)
         .then((response) => response.json())
         .then((data) => {
-          this.avgtemp_chistory = data.forecast.forecastday[0].day.avgtemp_c + '°C'
-          this.avgtemp_fhistory = data.forecast.forecastday[0].day.avgtemp_f + '°F'
-          this.avghumidityhistory = data.forecast.forecastday[0].day.avghumidity + '%'
-          this.maxwind_kphhistory = data.forecast.forecastday[0].day.maxwind_kph + 'km/h'
+          this.history = data.forecast.forecastday[date]
+          this.avgtemp_chistory = data.forecast.forecastday[0].day.avgtemp_c
+          this.avgtemp_fhistory = data.forecast.forecastday[0].day.avgtemp_f
+          this.avghumidityhistory = data.forecast.forecastday[0].day.avghumidity
+          this.maxwind_kphhistory = data.forecast.forecastday[0].day.maxwind_kph
           this.iconhistory = data.forecast.forecastday[0].day.condition.icon
           this.weatherhistory = data.forecast.forecastday[0].day.condition.text
         })
@@ -214,6 +103,12 @@ export default {
       d.setDate(d.getDate() - i)
       return d
     },
+    returnhistory(date) {
+      // currentdate ca input (this.date) si in functie de days returneaza de days ori url de la fetch history
+      let d = new Date(date)
+      d.setDate(d.getDate() - 1)
+      return d
+    },
     toggleTemp() {
       this.isCelsius = !this.isCelsius
     }
@@ -224,7 +119,12 @@ export default {
   <v-card width="300" class="mx-auto mt-5" color="transparent">
     <v-card-title>Weather App</v-card-title>
     <v-card-text>
-      <v-text-field density="compact" variant="outlined" label="Enter city name"></v-text-field>
+      <v-text-field
+        density="compact"
+        variant="outlined"
+        label="Enter city name"
+        v-model="inputdata"
+      ></v-text-field>
       <v-btn class="ml-20" @click="fetchData" color="transparent">Search</v-btn>
     </v-card-text>
   </v-card>
@@ -244,8 +144,9 @@ export default {
         <p v-if="isCelsius == false">{{ temp_f }}</p>
         <p v-if="isCelsius == true">{{ feelslike_c }}</p>
         <p v-if="isCelsius == false">{{ fellslie_f }}</p>
+        <p v-if="isCelsius == true">{{ wind_kph }}</p>
+        <p v-if="isCelsius == false">{{ wind_mph }}</p>
         <p>{{ humidity }}</p>
-        <p>{{ wind }}</p>
       </v-card-text>
       <v-btn class="ml-1 my-2" v-if="date" @click="fetchForecast" color="transparent" size="small"
         >Forecast</v-btn
@@ -255,33 +156,48 @@ export default {
       >
     </v-card>
   </div>
-  <div v-if="fetchForecast">
+  <v-div v-if="fetchForecast">
     <v-row>
-      <v-col v-for="day in week" :key="day.id" cols="5" class="d-flex child-flex">
-        <v-card v-if="avgtemp_c" width="200" class="ml-5 mt-7" color="transparent">
-          <v-card-title>{{ weatherforecast }}</v-card-title>
+      <v-col v-if="weatherforecast" cols="12" class="d-flex child-flex">
+        <v-card
+          v-for="day in week"
+          :key="day.date_epoch"
+          width="200"
+          class="ml-15 mt-7"
+          color="transparent"
+        >
+          <v-card-title>{{ day.day.condition.text }}</v-card-title>
           <v-card-text>
-            <v-img :src="iconforecast" centered></v-img>
-            <p>{{ nextDay(date, day.id) }}</p>
-            <p>{{ avgtemp_c }} | {{ avgtemp_f }}</p>
-            <p>{{ avghumidity }}</p>
-            <p>{{ maxwind_kph }}</p>
+            <v-img :src="day.day.condition.icon" centered></v-img>
+            <p>{{ day.day.date }}</p>
+            <p v-if="isCelsius == true">{{ day.day.avgtemp_c }} °C</p>
+            <p v-if="isCelsius == false">{{ day.day.avgtemp_f }} °F</p>
+            <p v-if="isCelsius == true">{{ day.day.maxwind_kph }} km/h</p>
+            <p v-if="isCelsius == false">{{ day.day.maxwind_mph }} m/h</p>
+            <p>{{ day.day.avghumidity }}</p>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
-  </div>
+  </v-div>
   <div v-if="fetchHistory">
     <v-row>
-      <v-col v-for="day in history" :key="day.id" cols="7" class="d-flex child-flex">
-        <v-card v-if="avgtemp_chistory" width="200" class="ml-5 mt-7" color="transparent">
-          <v-card-title>{{ weatherhistory }}</v-card-title>
+      <v-col v-if="weatherhistory" cols="7" class="d-flex child-flex">
+        <v-card
+          v-for="day in history"
+          :key="day.date_epoch"
+          width="200"
+          class="ml-5 mt-7"
+          color="transparent"
+        >
+          <v-card-title>{{ day.day.condition.text }}</v-card-title>
           <v-card-text>
-            <v-img :src="iconhistory" centered></v-img>
+            <v-img :src="day.day.condition.icon" centered></v-img>
             <p>{{ previousDay(date, day.id) }}</p>
-            <p>{{ avgtemp_chistory }} | {{ avgtemp_fhistory }}</p>
-            <p>{{ avghumidityhistory }}</p>
-            <p>{{ maxwind_kphhistory }}</p>
+            <p v-if="isCelsius == true">{{ day.day.avgtemp_c }}</p>
+            <p v-if="isCelsius == false">{{ day.day.avgtemp_f }}</p>
+            <p>{{ day.day.avghumidity }}</p>
+            <p>{{ day.day.maxwind_kph }}</p>
           </v-card-text>
         </v-card>
       </v-col>
