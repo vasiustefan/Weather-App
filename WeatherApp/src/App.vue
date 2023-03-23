@@ -15,6 +15,20 @@ export default {
       humidity: '',
       wind_kph: '',
       wind_mph: '',
+      pressure_mb: '',
+      pressure_in: '',
+      precip_mm: '',
+      precip_in: '',
+      vis_km: '',
+      vis_miles: '',
+      uv: '',
+      moon_phase: '',
+      moon_illumination: '',
+      air_quality: '',
+      maxtemp_c: '',
+      maxtemp_f: '',
+      mintemp_c: '',
+      mintemp_f: '',
       icon: '',
       weatherforecast: '',
       iconforecast: '',
@@ -37,22 +51,44 @@ export default {
   },
   methods: {
     fetchData() {
-      let Url = `http://api.weatherapi.com/v1/current.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&aqi=no`
+      let Url = `http://api.weatherapi.com/v1/current.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&aqi=yes`
       fetch(Url)
         .then((response) => response.json())
         .then((data) => {
           this.date = data.location.localtime
           this.city = data.location.name + ', ' + data.location.country
-          this.temp_c = data.current.temp_c + '°C'
-          this.temp_f = data.current.temp_f + '°F'
-          this.feelslike_c = data.current.feelslike_c + '°C'
-          this.fellslie_f = data.current.feelslike_f + '°F'
+          this.temp_c = data.current.temp_c + ' °C'
+          this.temp_f = data.current.temp_f + ' °F'
+          this.feelslike_c = data.current.feelslike_c + ' °C'
+          this.fellslie_f = data.current.feelslike_f + ' °F'
           this.weather = data.current.condition.text
-          this.humidity = data.current.humidity + '%'
-          this.wind_kph = data.current.wind_kph + 'km/h'
-          this.wind_mph = data.current.wind_mph + 'mph'
+          this.humidity = data.current.humidity + ' %'
+          this.wind_kph = data.current.wind_kph + ' km/h'
+          this.wind_mph = data.current.wind_mph + ' mph'
+          this.pressure_in = data.current.pressure_in + ' in'
+          this.pressure_mb = data.current.pressure_mb + ' mb'
+          this.precip_mm = data.current.precip_mm + ' mm'
+          this.precip_in = data.current.precip_in + ' in'
+          this.vis_km = data.current.vis_km + ' km'
+          this.vis_miles = data.current.vis_miles + ' miles'
+          this.uv = data.current.uv
           this.icon = data.current.condition.icon
+          this.air_quality = data.current.air_quality + ' µg/m³'
+          this.moon_phase = data.current.moon_phase
+          this.moon_illumination = data.current.moon_illumination + ' %'
         })
+      Url = `http://api.weatherapi.com/v1/forecast.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&days=1&aqi=no`
+      fetch(Url)
+        .then((response) => response.json())
+        .then((data) => {
+          this.maxtemp_c = data.forecast.forecastday[0].day.maxtemp_c + ' °C'
+          this.maxtemp_f = data.forecast.forecastday[0].day.maxtemp_f + ' °F'
+          this.mintemp_c = data.forecast.forecastday[0].day.mintemp_c + ' °C'
+          this.mintemp_f = data.forecast.forecastday[0].day.mintemp_f + ' °F'
+        })
+      this.fetchForecast()
+      this.fetchHistory()
+      console.log(this.fetchData)
     },
     fetchForecast() {
       let Url = `http://api.weatherapi.com/v1/forecast.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&days=5&aqi=no`
@@ -74,6 +110,7 @@ export default {
       const year = currentDay.getFullYear()
       const month = currentDay.getMonth() + 1
       const day = currentDay.getDate()
+      this.history = []
       for (let i = 1; i < 8; i++) {
         const stringDate = `${year}-${month}-${day - i}`
         fetch(
@@ -95,7 +132,6 @@ export default {
           })
       }
     },
-
     formatDate(date) {
       let d = new Date(date)
       let days = ['Duminica', 'Luni', 'Marti', 'Miercuri', 'Joi', 'Vineri', 'Sambata']
@@ -129,41 +165,84 @@ export default {
       <v-btn class="ml-20" @click="fetchData" color="transparent">Search</v-btn>
     </v-card-text>
   </v-card>
-  <div v-if="fetchData">
-    <v-card v-if="date" width="250" class="mx-auto mt-7" color="transparent">
-      <v-card-title
-        >{{ city }}
-        <v-btn class="ml-1" color="transparent" @click="toggleTemp" size="small"
-          >C/F</v-btn
-        ></v-card-title
-      >
-      <v-card-text>
-        <v-img :src="icon" centered></v-img>
-        <p>{{ weather }}</p>
-        <p>{{ formatDate(date) }}</p>
-        <p v-if="isCelsius == true">Temp {{ temp_c }}</p>
-        <p v-if="isCelsius == false">Temp {{ temp_f }}</p>
-        <p v-if="isCelsius == true">Feels like {{ feelslike_c }}</p>
-        <p v-if="isCelsius == false">Feels like {{ fellslie_f }}</p>
-        <p v-if="isCelsius == true">Wind {{ wind_kph }}</p>
-        <p v-if="isCelsius == false">Wind {{ wind_mph }}</p>
-        <p>Humidity {{ humidity }}</p>
-      </v-card-text>
-      <v-btn class="ml-1 my-2" v-if="date" @click="fetchForecast" color="transparent" size="small"
-        >Forecast</v-btn
-      >
-      <v-btn class="ml-14 my-2" v-if="date" @click="fetchHistory" color="transparent" size="small"
-        >History</v-btn
-      >
-    </v-card>
+  <div v-if="date">
+    <v-row>
+      <v-col cols="6" class="d-flex child-flex">
+        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>Precipitation</v-card-title>
+          <v-card-text>
+            <p v-if="isCelsius == false">{{ precip_in }}</p>
+            <p v-if="isCelsius == true">{{ precip_mm }}</p>
+          </v-card-text>
+        </v-card>
+        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>Pressure</v-card-title>
+          <v-card-text>
+            <p v-if="isCelsius == false">{{ pressure_in }}</p>
+            <p v-if="isCelsius == true">{{ pressure_mb }}</p>
+          </v-card-text>
+        </v-card>
+        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>Visibility</v-card-title>
+          <v-card-text>
+            <p v-if="isCelsius == true">{{ vis_km }}</p>
+            <p v-if="isCelsius == false">{{ vis_miles }}</p>
+          </v-card-text>
+        </v-card>
+        <v-card width="250" class="ml-auto mt-2" color="transparent">
+          <v-card-title
+            >{{ city }}
+            <v-btn class="ml-1" color="transparent" @click="toggleTemp" size="small"
+              >C/F</v-btn
+            ></v-card-title
+          >
+          <v-card-text>
+            <v-img :src="icon" centered></v-img>
+            <p>{{ weather }}</p>
+            <p>{{ formatDate(date) }}</p>
+            <p v-if="isCelsius == true">Temp {{ temp_c }}</p>
+            <p v-if="isCelsius == false">Temp {{ temp_f }}</p>
+            <p v-if="isCelsius == true">Max temp {{ maxtemp_c }}</p>
+            <p v-if="isCelsius == true">Min temp {{ mintemp_c }}</p>
+            <p v-if="isCelsius == false">Max temp {{ maxtemp_f }}</p>
+            <p v-if="isCelsius == false">Min temp {{ mintemp_f }}</p>
+            <p v-if="isCelsius == true">Feels like {{ feelslike_c }}</p>
+            <p v-if="isCelsius == false">Feels like {{ fellslie_f }}</p>
+            <p>Humidity {{ humidity }}</p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="6" class="d-flex child-flex">
+        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>UV</v-card-title>
+          <v-card-text>
+            <p>{{ uv }}</p>
+          </v-card-text>
+        </v-card>
+        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>Wind</v-card-title>
+          <v-card-text>
+            <p v-if="isCelsius == true">{{ wind_kph }}</p>
+            <p v-if="isCelsius == false">{{ wind_mph }}</p>
+          </v-card-text>
+        </v-card>
+        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>Air quality</v-card-title>
+          <v-card-text>
+            <p>{{ air_quality }}</p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
   </div>
-  <div v-if="fetchForecast">
+  <div v-if="date">
+    <h1 class="mt-3">5 Days Forecast</h1>
     <v-row>
       <v-col v-if="weatherforecast" cols="12" class="d-flex child-flex">
         <v-card
           v-for="day in week"
           :key="day.date_epoch"
-          width="200"
+          width="250"
           class="ml-15 mt-7"
           color="transparent"
         >
@@ -180,7 +259,8 @@ export default {
       </v-col>
     </v-row>
   </div>
-  <div v-if="fetchHistory">
+  <div v-if="date">
+    <h1 class="mt-3">7 Days History</h1>
     <v-row>
       <v-col cols="12" class="d-flex child-flex">
         <v-card
@@ -213,6 +293,9 @@ body {
 }
 p {
   font-size: 14px;
+  text-align: center;
+}
+div {
   text-align: center;
 }
 </style>
