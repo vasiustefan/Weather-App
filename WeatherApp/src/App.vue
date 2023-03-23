@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     fetchData() {
-      let Url = `http://api.weatherapi.com/v1/current.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&aqi=yes`
+      let Url = `http://api.weatherapi.com/v1/current.json?key=d46256db6955452598e155317232303&q=${this.inputdata}&aqi=yes`
       fetch(Url)
         .then((response) => response.json())
         .then((data) => {
@@ -73,9 +73,7 @@ export default {
           this.vis_miles = data.current.vis_miles + ' miles'
           this.uv = data.current.uv
           this.icon = data.current.condition.icon
-          this.air_quality = data.current.air_quality + ' µg/m³'
-          this.moon_phase = data.current.moon_phase
-          this.moon_illumination = data.current.moon_illumination + ' %'
+          this.air_quality = Math.floor(data.current.air_quality.co) + ' µg/m³'
         })
       Url = `http://api.weatherapi.com/v1/forecast.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&days=1&aqi=no`
       fetch(Url)
@@ -85,13 +83,15 @@ export default {
           this.maxtemp_f = data.forecast.forecastday[0].day.maxtemp_f + ' °F'
           this.mintemp_c = data.forecast.forecastday[0].day.mintemp_c + ' °C'
           this.mintemp_f = data.forecast.forecastday[0].day.mintemp_f + ' °F'
+          this.moon_phase = data.forecast.forecastday[0].astro.moon_phase
+          this.moon_illumination = data.forecast.forecastday[0].astro.moon_illumination + ' %'
         })
       this.fetchForecast()
       this.fetchHistory()
-      console.log(this.fetchData)
     },
     fetchForecast() {
-      let Url = `http://api.weatherapi.com/v1/forecast.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&days=5&aqi=no`
+      let Url = `http://api.weatherapi.com/v1/forecast.json?key=d46256db6955452598e155317232303&q=${this.inputdata}&days=5&aqi=no`
+      this.week = []
       fetch(Url)
         .then((response) => response.json())
         .then((data) => {
@@ -114,7 +114,7 @@ export default {
       for (let i = 1; i < 8; i++) {
         const stringDate = `${year}-${month}-${day - i}`
         fetch(
-          `http://api.weatherapi.com/v1/history.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&dt=${stringDate}&aqi=no`
+          `http://api.weatherapi.com/v1/history.json?key=d46256db6955452598e155317232303&q=${this.inputdata}&dt=${stringDate}&aqi=no`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -189,6 +189,31 @@ export default {
             <p v-if="isCelsius == false">{{ vis_miles }}</p>
           </v-card-text>
         </v-card>
+      </v-col>
+    </v-row>
+  </div>
+  <div v-if="date">
+    <v-row>
+      <v-col cols="6" class="d-flex child-flex">
+        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>UV</v-card-title>
+          <v-card-text>
+            <p>{{ uv }}</p>
+          </v-card-text>
+        </v-card>
+        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>Wind</v-card-title>
+          <v-card-text>
+            <p v-if="isCelsius == true">{{ wind_kph }}</p>
+            <p v-if="isCelsius == false">{{ wind_mph }}</p>
+          </v-card-text>
+        </v-card>
+        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>Air quality</v-card-title>
+          <v-card-text>
+            <p>{{ air_quality }}</p>
+          </v-card-text>
+        </v-card>
         <v-card width="250" class="ml-auto mt-2" color="transparent">
           <v-card-title
             >{{ city }}
@@ -209,27 +234,6 @@ export default {
             <p v-if="isCelsius == true">Feels like {{ feelslike_c }}</p>
             <p v-if="isCelsius == false">Feels like {{ fellslie_f }}</p>
             <p>Humidity {{ humidity }}</p>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col cols="6" class="d-flex child-flex">
-        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
-          <v-card-title>UV</v-card-title>
-          <v-card-text>
-            <p>{{ uv }}</p>
-          </v-card-text>
-        </v-card>
-        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
-          <v-card-title>Wind</v-card-title>
-          <v-card-text>
-            <p v-if="isCelsius == true">{{ wind_kph }}</p>
-            <p v-if="isCelsius == false">{{ wind_mph }}</p>
-          </v-card-text>
-        </v-card>
-        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
-          <v-card-title>Air quality</v-card-title>
-          <v-card-text>
-            <p>{{ air_quality }}</p>
           </v-card-text>
         </v-card>
       </v-col>
