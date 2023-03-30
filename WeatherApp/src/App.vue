@@ -75,7 +75,7 @@ export default {
           this.icon = data.current.condition.icon
           this.air_quality = Math.floor(data.current.air_quality.co) + ' µg/m³'
         })
-      Url = `http://api.weatherapi.com/v1/forecast.json?key=dd8adb29e86c47fb896133114230903&q=${this.inputdata}&days=1&aqi=no`
+      Url = `http://api.weatherapi.com/v1/forecast.json?key=d46256db6955452598e155317232303&q=${this.inputdata}&days=1&aqi=no`
       fetch(Url)
         .then((response) => response.json())
         .then((data) => {
@@ -167,61 +167,32 @@ export default {
   </v-card>
   <div v-if="date">
     <v-row>
-      <v-col cols="6" class="d-flex child-flex">
-        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+      <v-col cols="12" class="d-flex child-flex">
+        <v-card width="200" height="90" class="ml-1 mt-2" color="transparent">
           <v-card-title>Precipitation</v-card-title>
           <v-card-text>
             <p v-if="isCelsius == false">{{ precip_in }}</p>
             <p v-if="isCelsius == true">{{ precip_mm }}</p>
           </v-card-text>
         </v-card>
-        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+        <v-card width="200" height="90" class="ml-1 mt-2" color="transparent">
           <v-card-title>Pressure</v-card-title>
           <v-card-text>
             <p v-if="isCelsius == false">{{ pressure_in }}</p>
             <p v-if="isCelsius == true">{{ pressure_mb }}</p>
           </v-card-text>
         </v-card>
-        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
+        <v-card width="200" height="90" class="ml-1 mt-2" color="transparent">
           <v-card-title>Visibility</v-card-title>
           <v-card-text>
             <p v-if="isCelsius == true">{{ vis_km }}</p>
             <p v-if="isCelsius == false">{{ vis_miles }}</p>
           </v-card-text>
         </v-card>
-      </v-col>
-    </v-row>
-  </div>
-  <div v-if="date">
-    <v-row>
-      <v-col cols="6" class="d-flex child-flex">
-        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
-          <v-card-title>UV</v-card-title>
+        <v-card width="300" class="mx-10 mt-2" color="transparent">
+          <v-card-title>{{ city }} </v-card-title>
           <v-card-text>
-            <p>{{ uv }}</p>
-          </v-card-text>
-        </v-card>
-        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
-          <v-card-title>Wind</v-card-title>
-          <v-card-text>
-            <p v-if="isCelsius == true">{{ wind_kph }}</p>
-            <p v-if="isCelsius == false">{{ wind_mph }}</p>
-          </v-card-text>
-        </v-card>
-        <v-card width="150" height="90" class="ml-1 mt-2" color="transparent">
-          <v-card-title>Air quality</v-card-title>
-          <v-card-text>
-            <p>{{ air_quality }}</p>
-          </v-card-text>
-        </v-card>
-        <v-card width="250" class="ml-auto mt-2" color="transparent">
-          <v-card-title
-            >{{ city }}
-            <v-btn class="ml-1" color="transparent" @click="toggleTemp" size="small"
-              >C/F</v-btn
-            ></v-card-title
-          >
-          <v-card-text>
+            <v-btn class="ml-1" color="transparent" @click="toggleTemp" size="small">C/F</v-btn>
             <v-img :src="icon" centered></v-img>
             <p>{{ weather }}</p>
             <p>{{ formatDate(date) }}</p>
@@ -234,6 +205,25 @@ export default {
             <p v-if="isCelsius == true">Feels like {{ feelslike_c }}</p>
             <p v-if="isCelsius == false">Feels like {{ fellslie_f }}</p>
             <p>Humidity {{ humidity }}</p>
+          </v-card-text>
+        </v-card>
+        <v-card width="200" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>UV</v-card-title>
+          <v-card-text>
+            <p>{{ uv }}</p>
+          </v-card-text>
+        </v-card>
+        <v-card width="200" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>Wind</v-card-title>
+          <v-card-text>
+            <p v-if="isCelsius == true">{{ wind_kph }}</p>
+            <p v-if="isCelsius == false">{{ wind_mph }}</p>
+          </v-card-text>
+        </v-card>
+        <v-card width="200" height="90" class="ml-1 mt-2" color="transparent">
+          <v-card-title>Air quality</v-card-title>
+          <v-card-text>
+            <p>{{ air_quality }}</p>
           </v-card-text>
         </v-card>
       </v-col>
